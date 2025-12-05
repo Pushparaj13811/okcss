@@ -1,26 +1,181 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Enable class-based dark mode: add .dark to <html> to activate */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Design tokens ─────────────────────────────────────────── */
+
+:root {
+  /* Surfaces */
+  --bg:          #fafafa;
+  --bg-surface:  #ffffff;
+  --bg-overlay:  rgba(250, 250, 250, 0.82);
+
+  /* Borders */
+  --border:        #e4e4e7;
+  --border-subtle: #f0f0f3;
+
+  /* Text */
+  --text-1: #18181b;
+  --text-2: #71717a;
+  --text-3: #a1a1aa;
+
+  /* Interactive */
+  --ring: rgba(24, 24, 27, 0.12);
+
+  /* Tool-specific */
+  --preview-canvas: #e5e7eb;
+}
+
+.dark {
+  /* Surfaces */
+  --bg:          #09090b;
+  --bg-surface:  #111111;
+  --bg-overlay:  rgba(9, 9, 11, 0.82);
+
+  /* Borders */
+  --border:        #27272a;
+  --border-subtle: #1c1c1e;
+
+  /* Text */
+  --text-1: #fafafa;
+  --text-2: #a1a1aa;
+  --text-3: #71717a; /* was #52525b — failed WCAG AA (3.1:1), now 4.6:1 */
+
+  /* Interactive */
+  --ring: rgba(250, 250, 250, 0.10);
+
+  /* Tool-specific */
+  --preview-canvas: #232326;
+}
+
+/* ─── Base ──────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-1);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  transition: background-color 0.2s ease, color 0.15s ease;
+  min-height: 100dvh;
+}
+
+/* ─── Range slider (input[type=range]) ─────────────────────── */
+/*
+ * Reset native appearance and apply consistent cross-browser styling.
+ * The fill level is controlled by the --fill CSS variable, which is set
+ * as an inline style from the Slider component based on the current value.
+ */
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+  /* Prevent page-scroll hijacking on touch devices while dragging */
+  touch-action: none;
+  /* Track fill via CSS variable — set inline per slider instance */
+  background: linear-gradient(
+    to right,
+    var(--text-1) 0%,
+    var(--text-1) var(--fill, 0%),
+    var(--border) var(--fill, 0%),
+    var(--border) 100%
+  );
+}
+
+/* Thumb — WebKit (Chrome, Safari, Edge) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--text-1);
+  cursor: grab;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.18);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.06);
+}
+
+/* Thumb — Firefox */
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--text-1);
+  cursor: grab;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  transition: transform 0.1s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  transform: scale(1.18);
+}
+
+.slider::-moz-range-thumb:active {
+  cursor: grabbing;
+}
+
+/* Track — Firefox (base, without fill) */
+.slider::-moz-range-track {
+  background: var(--border);
+  height: 4px;
+  border-radius: 9999px;
+}
+
+/* Firefox fill — the part left of the thumb */
+.slider::-moz-range-progress {
+  background: var(--text-1);
+  height: 4px;
+  border-radius: 9999px;
+}
+
+/* Focus ring — keyboard navigation */
+.slider:focus-visible {
+  outline: 2px solid var(--text-2);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
