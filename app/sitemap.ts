@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const BASE_URL = 'https://okcss.vercel.app';
+const BASE_URL = 'https://okcss.hpm.com.np';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const tools = [
@@ -23,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/keyframes',
     '/outline',
     '/combine',
+    '/explore',
   ];
 
   return [
